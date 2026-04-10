@@ -12,8 +12,8 @@ app.use(cors());
 //MIDDLEWARE PARA LEER JSON
 app.use(express.json());
 
-//GET
 
+//GET
 app.get("/users", (req, res) => {
   db.query("SELECT * FROM users", (err, result) => {
     if (err) {
@@ -53,13 +53,23 @@ app.post("/crearUsers", (req, res) => {
 });
 
 
-//Endpoint PUT actualizar
-app.put("/actualizar/:id", (req, res) => {
- const { name, last_name } = req.body;
-    db.query(`UPDATE users SET name = ?, last_name = ? WHERE id = ?`, [name, last_name, req.params.id], (err) => {
-        if (err) return res.status(500).json({ error: "Error al actualizar" });
-        res.json({ mensaje: "Usuario actualizado" });
-    });
+// PUT - actualizar usuario por ID
+app.put("/users/:id", (req, res) => {
+  const id = req.params.id;
+
+  const {name, last_name, username, email, password, rol, career_id, active} = req.body;
+
+   db.query(`UPDATE users SET name = ?, last_name = ?, username = ?, email = ?, password = ?, rol = ?, career_id = ?, active = ? WHERE id = ?`,
+    [name, last_name, username, email, password, rol, career_id, active, id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Error al actualizar el usuario" });
+      }
+
+      res.json({ message: "Usuario actualizado correctamente" });
+    }
+  );
 });
 
 
@@ -76,11 +86,7 @@ app.delete("/eliminar/:idusuario", (req, res) => {
 });
 
 
-
-
-
-
 //Iniciar el servidor
 app.listen(PORT, () => {
-  console.log(`Servidor crriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
